@@ -1,0 +1,21 @@
+server:
+  port: 5000
+
+spring:
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/socialdb'
+    username: 'admin'
+    password: 'password'
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        dialect: 'org.hibernate.dialect.PostgreSQLDialect'
+    hibernate:
+    #  is used for database initialization. We set the value to update value so that
+    #  a table will be created in the database automatically corresponding to defined data model.
+    #  Any change to the model will also trigger an update to the table. For production,
+    #  this property should be validated
+      ddl-auto: 'update'
