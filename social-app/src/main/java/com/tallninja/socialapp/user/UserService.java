@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    public List<User> findAll();
+    public List<User> findAll() throws Exception;
 
-    public User findOne(UUID id);
+    public User findOne(UUID id) throws Exception;
 
-    public User create(User user);
+    public User create(User user) throws Exception;
 
-    public User update(UUID id, User user);
+    public User update(UUID id, User user) throws Exception;
 
-    public void delete(UUID id);
+    public void delete(UUID id) throws Exception;
 }

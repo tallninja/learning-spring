@@ -1,5 +1,7 @@
 server:
   port: 5000
+  compression:
+    enabled: true
 
 spring:
   datasource:
@@ -7,12 +9,6 @@ spring:
     username: 'admin'
     password: 'password'
   jpa:
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
-        dialect: 'org.hibernate.dialect.PostgreSQLDialect'
     hibernate:
     #  is used for database initialization. We set the value to update value so that
     #  a table will be created in the database automatically corresponding to defined data model.

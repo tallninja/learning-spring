@@ -1,5 +1,6 @@
 package com.tallninja.socialapp.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -15,40 +17,67 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Override
-    public List<User> findAll() {
-        List<User> users = new ArrayList<>();
-        userRepository.findAll().forEach(users::add);
-        System.out.println("####################Fetching Users#######################");
-        return users;
+    public List<User> findAll() throws Exception {
+        try {
+            return new ArrayList<>(userRepository.findAll());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 
     @Override
-    public User findOne(UUID id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.get();
+    public User findOne(UUID id) throws Exception {
+        try {
+            Optional<User> user = userRepository.findById(id);
+            if (user.isEmpty()) throw new Exception("User Not Found");
+            return user.get();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 
     @Override
-    public User create(User user) {
-        // build the user
-        User _user = User.builder().firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .email(user.getEmail()).build();
-        User newUser = userRepository.save(_user);
-        System.out.println("####################Saving user########################");
-        System.out.println(newUser);
-        return newUser;
+    public User create(User user) throws Exception {
+        try {
+            // check if user exists
+            Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+            if (existingUser.isPresent()) throw new Exception("User with email " + user.getEmail() + " already exists");
+
+            // create user
+            User _user = new User(null, user.getFirstName(), user.getLastName(), user.getEmail());
+            User newUser = userRepository.save(_user);
+            log.info("Created new user");
+            return newUser;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 
     @Override
-    public User update(UUID id, User user) {
-        Optional<User> updatedUser = userRepository.findById(id);
-        return updatedUser.get();
+    public User update(UUID id, User _user) throws Exception {
+        try {
+            User user = this.findOne(id);
+            user.setFirstName(_user.getFirstName());
+            user.setLastName(_user.getLastName());
+            user.setEmail(_user.getEmail());
+            return userRepository.save(_user);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 
     @Override
-    public void delete(UUID id) {
-        Optional<User> user = userRepository.findById(id);
-        user.ifPresent(value -> userRepository.delete(value));
+    public void delete(UUID id) throws Exception {
+        try {
+            User user = this.findOne(id);
+            userRepository.delete(user);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
     }
 }
