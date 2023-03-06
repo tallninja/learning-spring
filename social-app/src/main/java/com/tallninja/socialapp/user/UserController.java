@@ -52,8 +52,9 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public User patchUser(@PathVariable("id") UUID id, @RequestBody() User user) throws Exception {
-        return userService.patchUpdate(id, user);
+    public ResponseEntity<User> patchUser(@PathVariable("id") UUID id, @RequestBody() User _user) throws Exception {
+        User user = userService.patchUpdate(id, _user);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

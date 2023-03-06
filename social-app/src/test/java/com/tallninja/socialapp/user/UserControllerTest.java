@@ -1,12 +1,15 @@
 package com.tallninja.socialapp.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -63,6 +66,8 @@ class UserControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(testUsers.size())))
                 .andExpect(jsonPath("$.[0].id", is(user.getId().toString())));
+
+        verify(userService, times(1)).findAll();
     }
 
     @Test
@@ -74,11 +79,70 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(user.getId().toString())));
+
+        verify(userService, times(1)).findOne(user.getId());
     }
 
     @Test
     void testCreateUser() throws Exception {
         User user = testUsers.get(0);
-        System.out.println(objectMapper.writeValueAsString(user));
+        // when creating a user the id is automatically generated
+        // preferable to use Data Transfer Objects (DTOs)
+        given(userService.create(user)).willReturn(testUsers.get(0));
+
+        mockMvc.perform(post("/api/v1/users", user)
+                .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists(HttpHeaders.LOCATION))
+                .andExpect(jsonPath("$.id", is(user.getId().toString())));
+
+        verify(userService, times(1)).create(user);
+    }
+
+    @Test
+    void updateUser() throws Exception {
+        User user = testUsers.get(0);
+        given(userService.update(user.getId(), user)).willReturn(user);
+        mockMvc.perform(put("/api/v1/users/" + user.getId().toString(), user)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().toString())));
+
+        verify(userService, times(1)).update(user.getId(), user);
+    }
+
+    @Test
+    void patchUpdateUser() throws Exception {
+        User user = testUsers.get(0);
+
+        given(userService.patchUpdate(user.getId(), user)).willReturn(user);
+        mockMvc.perform(patch("/api/v1/users/" + user.getId().toString(), user)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(user)))
+                .andExpect(status().isOk());
+
+        verify(userService, times(1)).patchUpdate(user.getId(), user);
+    }
+
+    @Test
+    void deleteUser() throws Exception {
+        User user = testUsers.get(0);
+
+        mockMvc.perform(delete("/api/v1/users/" + user.getId().toString())
+                    .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        verify(userService, times(1)).delete(user.getId());
+
+        // capture the id argument passed to the delete method in userService
+        ArgumentCaptor<UUID> idArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(userService).delete(idArgumentCaptor.capture());
+
+        assertThat(user.getId()).isEqualTo(idArgumentCaptor.getValue());
     }
 }
