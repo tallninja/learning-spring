@@ -13,5 +13,7 @@ public interface UserService {
 
     public User update(UUID id, User user) throws Exception;
 
+    User patchUpdate(UUID id, User user) throws Exception;
+
     public void delete(UUID id) throws Exception;
 }

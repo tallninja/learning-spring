@@ -3,6 +3,7 @@ package com.tallninja.socialapp.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,28 @@ public class UserServiceImpl implements UserService {
             user.setLastName(_user.getLastName());
             user.setEmail(_user.getEmail());
             return userRepository.save(_user);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public User patchUpdate(UUID id, User _user) throws Exception {
+        try {
+            User user = this.findOne(id);
+
+            if(StringUtils.hasText(_user.getFirstName()))
+                user.setFirstName(_user.getFirstName());
+
+            if(StringUtils.hasText(_user.getLastName()))
+                user.setLastName(_user.getLastName());
+
+            if(StringUtils.hasText(_user.getEmail()))
+                user.setEmail(_user.getEmail());
+
+            return userRepository.save(user);
+
         } catch (Exception e) {
             log.error(e.getMessage());
             throw e;

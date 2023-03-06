@@ -35,6 +35,11 @@ public class UserController {
         return userService.update(id, user);
     }
 
+    @PatchMapping("/{id}")
+    public User patchUser(@PathVariable("id") UUID id, @RequestBody() User user) throws Exception {
+        return userService.patchUpdate(id, user);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable("id") UUID id) throws Exception {
         userService.delete(id);
