@@ -1,7 +1,6 @@
 package com.tallninja.socialapp.user;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +13,16 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
+    private final UserService userService;
 
-    @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
 
     @GetMapping({"", "/"})
     public ResponseEntity<List<User>> getAllUsers(HttpServletRequest request) throws Exception {
-        System.out.println("IP Address: " + request.getRemoteAddr());
+//        System.out.println("IP Address: " + request.getRemoteAddr());
         List<User> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
