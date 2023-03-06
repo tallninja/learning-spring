@@ -19,18 +19,20 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping()
-    public List<User> getAllUsers(HttpServletRequest request) throws Exception {
+    @GetMapping({"", "/"})
+    public ResponseEntity<List<User>> getAllUsers(HttpServletRequest request) throws Exception {
         System.out.println("IP Address: " + request.getRemoteAddr());
-        return userService.findAll();
+        List<User> users = userService.findAll();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable("id") UUID id) throws Exception {
-        return userService.findOne(id);
+    public ResponseEntity<User> getUser(@PathVariable("id") UUID id) throws Exception {
+        User user = userService.findOne(id);
+        return  new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping({"", "/"})
     public ResponseEntity<User> createUser(@RequestBody() User _user) throws Exception {
         User user = userService.create(_user);
 
@@ -39,12 +41,13 @@ public class UserController {
         headers.add(HttpHeaders.LOCATION,
                 "/api/v1/users" + user.getId().toString());
 
-        return new ResponseEntity<User>(user, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(user, headers, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable("id") UUID id, @RequestBody() User user) throws  Exception {
-        return userService.update(id, user);
+    public ResponseEntity<User> updateUser(@PathVariable("id") UUID id, @RequestBody() User _user) throws  Exception {
+        User user = userService.update(id, _user);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
@@ -53,7 +56,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable("id") UUID id) throws Exception {
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable("id") UUID id) throws Exception {
         userService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
