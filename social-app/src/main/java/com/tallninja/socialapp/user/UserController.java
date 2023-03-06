@@ -1,5 +1,6 @@
 package com.tallninja.socialapp.user;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,9 @@ public class UserController {
     private UserService userService;
 
     @GetMapping()
-    public List<User> getAllUsers() throws Exception {
-            return userService.findAll();
+    public List<User> getAllUsers(HttpServletRequest request) throws Exception {
+        System.out.println("IP Address: " + request.getRemoteAddr());
+        return userService.findAll();
     }
 
     @GetMapping("/{id}")
