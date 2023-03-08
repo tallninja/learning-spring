@@ -1,6 +1,9 @@
 package com.tallninja.socialapp.posts;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedDate;
@@ -26,9 +29,14 @@ public class Post {
     @Column(length = 36, columnDefinition = "uuid", updatable = false, nullable = false)
     private UUID id;
 
+    @NotNull
+    @NotBlank
     @Column(name = "title", nullable = false)
     private String title;
 
+    @NotNull
+    @NotBlank
+    @Size(min = 4, max = 50)
     @Column(name = "content", nullable = false)
     private String content;
 
