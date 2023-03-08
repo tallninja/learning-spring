@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -49,7 +50,7 @@ public class PostController {
     }
 
     @PostMapping(POSTS_PATH)
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postData) {
+    public ResponseEntity<PostDto> createPost(@Validated @RequestBody PostDto postData) {
         Post post = postService.create(concertToEntity(postData));
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.LOCATION, POSTS_PATH + "/" + post.getId().toString());
