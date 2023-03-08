@@ -15,4 +15,12 @@
 
     </bean>
 
+    <bean id="userRepository" class="com.tallninja.UserRepository">
+
+    </bean>
+
+    <bean id="userService" class="com.tallninja.UserService">
+        <constructor-arg ref="userRepository" />
+    </bean>
+
 </beans>
