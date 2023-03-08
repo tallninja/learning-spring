@@ -20,7 +20,6 @@ public class BootstrapData implements CommandLineRunner {
                 .build();
 
         Post savedPost = postRepository.save(testPost);
-
-        System.out.println(savedPost);
+        postRepository.delete(savedPost);
     }
 }
